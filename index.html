@@ -305,7 +305,7 @@ footer p { margin: 0 0 4px; }
     <dl class="facts">
       <div><dt>Controls</dt><dd>PBKDF2 password hashing, CSRF tokens, lockout after repeated failed logins, secure cookies, 30-minute sessions and HSTS.</dd></div>
       <div><dt>Built with</dt><dd>Python, Django, PostgreSQL, Django REST framework, django-axes.</dd></div>
-      <div><dt>Limits</dt><dd>The interface is plain, and rereading the code I found a gap in the products API. I tested a one-line fix on a copy. Both are described below.</dd></div>
+      <div><dt>Limits</dt><dd>The interface is plain, and rereading the code I found a gap in the products API, which I fixed with one line and a test. Both are described below.</dd></div>
       <div><dt>Code</dt><dd><a href="https://github.com/yemioluwadare/cybersecurity-portfolio/tree/main/securecart-secure-ecommerce">On GitHub</a></dd></div>
     </dl>
   </div>
@@ -323,12 +323,12 @@ footer p { margin: 0 0 4px; }
       </figure>
     </div></div>
     <div class="part"><h3>What I found, looking back</h3><div class="text">
-      <p>I reread the code with a reviewer's eye. The products API asks for a login but not for an admin. Its viewset sets no permission class, so the default applies, which is any logged-in user. An admin-only permission class is already written in the project and imported, but it is not applied.</p>
-      <p>I tested this on a copy of the project. Logged in as a customer, I could create a product through the API. After adding one line, <code>permission_classes = [IsAdminOrReadOnly]</code>, the same customer was refused with a 403 on create, update and delete, and the price did not change. An admin could still write, and reading still worked. One side effect: the product list can now be read without logging in. The fix is not yet in the code on GitHub.</p>
+      <p>I reread the code with a reviewer's eye. The products API asks for a login but not for an admin. Its viewset sets no permission class, so the default applies, which is any logged-in user. An admin-only permission class is already written in the project and imported, but it was not applied.</p>
+      <p>I tested this on a copy of the project, then applied it to the code on GitHub and ran the test there. Logged in as a customer, I could create a product through the API. After adding one line, <code>permission_classes = [IsAdminOrReadOnly]</code>, the same customer was refused with a 403 on create, update and delete, and the price did not change. An admin could still write, and reading still worked. One side effect: the product list can now be read without logging in. The fix and the test are in the code on GitHub.</p>
       <p>The shop's interface is also plain, and I would redesign it.</p>
     </div></div>
     <div class="part"><h3>What I would do next</h3><div class="text">
-      <p>I would apply the admin-only permission to the products API and keep the test I wrote, which checks that a customer cannot change a product. I would then redesign the interface, add real payments through a provider such as Stripe or PayPal, a log of what admins and customers do, and status tracking for orders, from pending to delivered.</p>
+      <p>I would keep running the test I wrote, which checks that a customer cannot change a product, on every change. I would then redesign the interface, add real payments through a provider such as Stripe or PayPal, a log of what admins and customers do, and status tracking for orders, from pending to delivered.</p>
     </div></div>
     <div class="part"><h3>Tools</h3><div class="text">
       <p>Python, Django. PostgreSQL. Django REST framework. django-axes.</p>
@@ -347,7 +347,7 @@ footer p { margin: 0 0 4px; }
     <p class="summary">A PostgreSQL banking database where what each user can see and change depends on their role.</p>
     <dl class="facts">
       <div><dt>Design</dt><dd>Four roles (bank manager, loan officer, teller, customer), each granted only the tables it needs, with row-level security, bcrypt and encrypted amounts.</dd></div>
-      <div><dt>Finding</dt><dd>Re-running the controls showed refused deletes, an audited balance update, and two customer roles getting different rows. It also showed a gap in one policy, described below.</dd></div>
+      <div><dt>Finding</dt><dd>Re-running the controls showed refused deletes, an audited balance update, and two customer roles getting different rows. It also showed a gap in one policy, which I fixed and describe below.</dd></div>
       <div><dt>Built with</dt><dd>PostgreSQL, SQL, pgcrypto, PL/pgSQL triggers.</dd></div>
       <div><dt>Code</dt><dd><a href="https://github.com/yemioluwadare/cybersecurity-portfolio/tree/main/secure-banking-database-system">On GitHub</a></dd></div>
     </dl>
@@ -372,10 +372,10 @@ footer p { margin: 0 0 4px; }
         <figcaption>A balance update by a bank manager, recorded in the audit table.</figcaption>
       </figure>
       <p>The same run showed a gap. Each customer role also saw every Active account, not only their own. The cause is in the SQL. The teller policy has no role restriction, and PostgreSQL combines permissive policies with OR, so it applies to customers too.</p>
-      <p>I tested a fix on a copy of the database. Adding TO teller to that policy stopped the leak, but it exposed two more problems. The customer policies also had no role restriction, and they turn the role name into a number, which fails for a role named teller, so the teller's own queries returned an error. And customers could not read their own transactions, because the policy checks a column they had no right to read. With TO customer added to both customer policies and one extra column grant, each customer saw only their own accounts and transactions, and the teller saw Active accounts only. Tellers see no transactions, because no policy gives them any. These changes are not yet in the code on GitHub.</p>
+      <p>I tested a fix on a copy of the database. Adding TO teller to that policy stopped the leak, but it exposed two more problems. The customer policies also had no role restriction, and they turn the role name into a number, which fails for a role named teller, so the teller's own queries returned an error. And customers could not read their own transactions, because the policy checks a column they had no right to read. With TO customer added to both customer policies and one extra column grant, each customer saw only their own accounts and transactions, and the teller saw Active accounts only. Tellers see no transactions, because no policy gives them any. These three changes are now in the code on GitHub.</p>
     </div></div>
     <div class="part"><h3>What I would do next</h3><div class="text">
-      <p>I would apply the three changes to the project, add a test that a customer sees only their own accounts and transactions, and decide whether tellers should see any transactions. I would also keep the encryption key out of the SQL files, because it is written into the script as a placeholder, and run the role tests automatically on every change.</p>
+      <p>I would add a test that a customer sees only their own accounts and transactions, and decide whether tellers should see any transactions. I would also keep the encryption key out of the SQL files, because it is written into the script as a placeholder, and run the role tests automatically on every change.</p>
     </div></div>
     <div class="part"><h3>Tools</h3><div class="text">
       <p>PostgreSQL and SQL. pgcrypto. PL/pgSQL triggers.</p>
