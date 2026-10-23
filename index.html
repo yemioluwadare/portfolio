@@ -317,6 +317,10 @@ footer p { margin: 0 0 4px; }
     <div class="part"><h3>What I built</h3><div class="text">
       <p>SecureCart is a Django web application on a PostgreSQL database. A customer can register, log in, reset a password, browse products, keep a cart that is stored in the database against their account, and go through checkout. Payment is a dummy form, so no real card is taken. Staff use an admin area to manage products and orders, and a role field on each user separates staff from customers. <a href="https://github.com/yemioluwadare/cybersecurity-portfolio/tree/main/securecart-secure-ecommerce">The code is on GitHub</a>.</p>
       <p>The security controls are Django's own authentication with PBKDF2 password hashing, CSRF tokens on forms, login required for the cart and checkout, and the django-axes package to lock out repeated failed logins. Session cookies are secure and HTTP-only, a session ends after 30 minutes, and HSTS is on. A small REST API for products and orders requires login by default.</p>
+      <figure>
+        <img src="img/securecart-admin.png" width="680" height="482" loading="lazy" alt="The Django admin index for SecureCart. Sections list Groups, then Axes with access attempts, access failures and access logs, then the shop's Carts, Orders, Products and Users, each with Add and Change links.">
+        <figcaption>The admin area. Staff manage products, orders and users here, and django-axes records failed logins.</figcaption>
+      </figure>
     </div></div>
     <div class="part"><h3>What I found, looking back</h3><div class="text">
       <p>I reread the code with a reviewer's eye. The products API asks for a login but not for an admin. Its viewset sets no permission class, so the default applies, which is any logged-in user. An admin-only permission class is already written in the project and imported, but it is not applied.</p>
@@ -414,6 +418,14 @@ footer p { margin: 0 0 4px; }
       <figure>
         <img src="img/game-windmill-kit.jpg" width="1200" height="1153" loading="lazy" alt="A sheet of 19 low-poly scenery pieces for the Windmill Highlands zone, including a stone tower, windmill rotors, a cottage, a bridge, a tree, a fence, a rock and grass terraces, each labelled with its triangle count.">
         <figcaption>The scenery kit for the second zone, Windmill Highlands, with the triangle count of each piece.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/game-stormglass-flight.png" width="1920" height="957" loading="lazy" alt="A small blue ship with wings flying inside the Stormglass Conduit, a dark blue octagonal tunnel with orange edge lines, with open sky at the far end.">
+        <figcaption>A winged ship flying through the Stormglass Conduit, the third zone, captured in Roblox Studio.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/game-stormglass-entry.png" width="1920" height="957" loading="lazy" alt="Looking up the Stormglass Conduit from its entry. A small blue ship is far up the tunnel, a wooden rail crosses the frame, and a pale octagonal opening to the sky sits at the top.">
+        <figcaption>The conduit seen from its entry, with the opening to the sky at the far end.</figcaption>
       </figure>
     </div></div>
     <div class="part"><h3>Tools</h3><div class="text">
